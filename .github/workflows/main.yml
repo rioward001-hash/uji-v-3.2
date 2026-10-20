@@ -1,0 +1,29 @@
+name: Rakit APK Uji
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  rakit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Buka zip proyek
+        run: unzip -o uji-baca-dana-proyek.zip -d proyek
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Rakit APK
+        working-directory: proyek
+        run: gradle assembleRelease --no-daemon
+      - name: Ganti nama APK
+        run: cp proyek/app/build/outputs/apk/release/app-release.apk uji-baca-dana.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: uji-baca-dana-apk
+          path: uji-baca-dana.apk
